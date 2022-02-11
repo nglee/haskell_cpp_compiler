@@ -39,3 +39,53 @@ isPalindrome :: (Eq a) => [a] -> Bool
 isPalindrome [] = True
 isPalindrome [_] = True
 isPalindrome (x:xs) = x == last xs && isPalindrome (init xs)
+
+-- Problem 7
+
+-- Problem 8
+compress :: (Eq a) => [a] -> [a]
+compress [] = []
+compress (x:xs) = x : compressImpl x xs
+    where
+        compressImpl :: (Eq a) => a -> [a] -> [a] -- the last puhsed value, remaining input list
+        compressImpl x [] = []
+        compressImpl x xs
+            | x == head xs = compressImpl x (tail xs)
+            | otherwise = head xs : compressImpl (head xs) (tail xs)
+
+-- above solution added an element whenever a new element is met
+-- the following solution delays adding elements until the next element is a different element
+
+compress' :: (Eq a) => [a] -> [a]
+compress' [] = []
+compress' [x] = [x]
+compress' (x:xs)
+    | x == head xs = compress' xs
+    | otherwise = x : compress' xs
+
+-- Problem 9
+pack :: (Eq a) => [a] -> [[a]]
+pack [] = []
+pack [x] = [[x]]
+pack (x:xs) = packImpl [[x]] xs
+    where
+        packImpl :: (Eq a) => [[a]] -> [a] -> [[a]]
+        packImpl packed [] = packed
+        packImpl packed (x:xs)
+            | last (last packed) == x = packImpl (init packed ++ [last packed ++ [x]]) xs
+            | otherwise = packed ++ packImpl [[x]] xs
+
+pack' :: (Eq a) => [a] -> [[a]]
+pack' [] = []
+pack' [x] = [[x]]
+pack' (x:xs) = packImpl [x] xs
+    where
+        packImpl :: (Eq a) => [a] -> [a] -> [[a]]
+        packImpl packed [] = [packed]
+        packImpl packed (x:xs)
+            | head packed == x = packImpl (packed ++ [x]) xs
+            | otherwise = packed : packImpl [x] xs
+
+-- Problem 10
+encode :: (Eq a) => [a] -> [(Int, a)]
+encode xs = map (\x -> (length x, head x)) (pack xs)
